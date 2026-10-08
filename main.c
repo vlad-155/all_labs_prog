@@ -4,13 +4,13 @@
 #define EMPTY 0
 #define WOOD 1
 #define STONE 2
-#define SEEDS 3
-#define GRASS 4
+#define WHEAT_SEEDS 3
+#define CORN_SEEDS 4
 #define CLAY 5
-#define LEAF 6
-#define CARBON 7
-#define IRON 8
-#define GOLD 9
+#define CARBON 6
+#define SHOVEL_LV_1 7
+#define RAKE_LV_1 8
+#define AXE_LV_1 9
 #define DAY_HOURS 24
 
 int main()
@@ -20,16 +20,16 @@ int main()
 	
 	int inventory[ARR_SIZE] = {0};
 
-	inventory[0] = WOOD;
-	inventory[1] = CARBON;
-	inventory[2] = STONE;
-	inventory[3] = IRON;
+	inventory[0] = RAKE_LV_1;
+	inventory[1] = SHOVEL_LV_1;
+	inventory[2] = AXE_LV_1;
+	inventory[3] = WHEAT_SEEDS;
 	inventory[4] = CLAY;
 	inventory[5] = CARBON;
 	inventory[6] = EMPTY;
 	inventory[7] = CARBON;
-	inventory[8] = IRON;
-	inventory[9] = GOLD;
+	inventory[8] = WOOD;
+	inventory[9] = CARBON;
 
 	char player_name[32];
 	
@@ -84,7 +84,7 @@ int main()
 				printf("Время успешно обновлено!\n");
 				break;
 			case 3:
-				for (int i = 0; i < ARR_SIZE; i++)
+				/*for (int i = 0; i < ARR_SIZE; i++)
 				{
 					switch (inventory[i])
 					{
@@ -119,7 +119,7 @@ int main()
 							printf("Слот %d: [0]\n", i);
 							break;
 					}
-				}
+				}*/
 				break;
 			case 4:
 				printf("Введите индекс слота от 0 до 9 >>");
