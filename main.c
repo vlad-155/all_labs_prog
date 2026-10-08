@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #define ARR_SIZE 10
 #define EMPTY 0
 #define WOOD 1
@@ -30,7 +31,11 @@ int main()
 	inventory[8] = IRON;
 	inventory[9] = GOLD;
 
-	printf("Добро пожаловать в меню игры \"Весёлый фермер\"!\n");
+	char player_name[32];
+	
+	printf("Введите ваше имя: >>");
+	scanf("%31s", player_name);
+	printf("%s, добро пожаловать в меню игры \"Весёлый фермер\"!\n", player_name);
 
 	int choice;
 	int work_hours;
