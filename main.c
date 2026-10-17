@@ -70,7 +70,9 @@ void print_reference()
     printf("[3] Посмотреть инвентарь\n");
     printf("[4] Положить предмет в слот\n");
     printf("[5] Выбросить предмет\n");
-    printf("[6] Ревизия ресурсов\n\n");
+    printf("[6] Ревизия ресурсов\n");
+    printf("[7] Поиск предмета в рюкзаке по названию\n");
+    printf("\n");
 }
 
 int get_safe_int_input(const char *input_prompt, int min, int max)
@@ -141,18 +143,17 @@ int main()
 
 	char player_name[32];
 	
-	printf("Введите ваше имя: >>");
+	printf("Введите ваше имя >>");
 	scanf("%31s", player_name);
-	printf("%s, добро пожаловать в меню игры \"Весёлый фермер\"!\n", player_name);
+	printf("%s, добро пожаловать в меню игры 'Весёлый фермер'!\n", player_name);
 
     int choice;
     int work_hours;
 	int index, item_id;
-	int counter;
 	while (1)
 	{
         print_reference();
-		choice = get_safe_int_input("Для выбора действия введите число от 0 до 6", 0, 6);
+		choice = get_safe_int_input("Для выбора действия введите число от 0 до 7", 0, 7);
 		switch (choice)
 		{
 			case 0:
@@ -197,17 +198,15 @@ int main()
 				break;
 			case 6:
 		        item_id = get_safe_int_input("Введите ID предмета для поиска", 0, MAX_ITEMS - 1);
-				counter = 0;
 				printf("Предмет находится в следующих слотах: ");
-				for (int i = 0; i < ARR_SIZE; i++)
-				{
-					if (inventory[i] == item_id)
-					{
-						counter++;
-						printf("%d ", i);
-					}
-				}
-				printf("\nОбщее количество включений предмета: %d\n", counter);
+				search_by_item_id(item_id, inventory);
+		        break;
+		    case 7:
+                char search_query[MAX_NAME_LEN];
+		        printf("Введите поисковый запрос >>");
+		        scanf("%31s", search_query);
+		        search_by_item_name(search_query, item_names, inventory);
+		        break;
 		}
 	}
 
