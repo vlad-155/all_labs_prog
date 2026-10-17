@@ -85,6 +85,49 @@ int get_safe_int_input(const char *input_prompt, int min, int max)
     return input_val;
 }
 
+void search_by_item_id(int item_id, int inventory[ARR_SIZE])
+{
+    int counter = 0;
+    for (int i = 0; i < ARR_SIZE; i++)
+    {
+        if (inventory[i] == item_id)
+        {
+            counter++;
+            printf("%d ", i);
+        }
+    }
+    if (counter)
+    {
+        printf("\nОбщее количество включений предмета: %d\n", counter);
+    }
+    else
+    {
+        printf("-\n");
+    }
+}
+
+void search_by_item_name(const char *search_query, char item_names[ARR_SIZE][MAX_NAME_LEN], int inventory[ARR_SIZE])
+{
+    int item_id = -1;
+    for (int i = 0; i < ARR_SIZE; i++)
+    {
+        if (strcmp(item_names[i], search_query) == 0)
+        {
+            item_id = i;
+            break;
+        }
+    }
+    if (item_id == -1)
+    {
+        printf("Предмет с названием '%s' не найден в списке доступных предметов.\n", search_query);
+    }
+    else
+    {
+        printf("Предмет [%d] '%s' находится в следующих слотах: ", item_id, search_query);
+        search_by_item_id(item_id, inventory);
+    }
+}
+
 int main()
 {
 	int current_day = 1;
