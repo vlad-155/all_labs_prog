@@ -61,6 +61,18 @@ void set_item_names(char item_names[ARR_SIZE][MAX_NAME_LEN], const char *file_na
     }
 }
 
+void print_reference()
+{
+    printf("\nВам доступны следующие действия:\n");
+    printf("[0] Выход\n");
+    printf("[1] Посмотреть на часы\n");
+    printf("[2] Промотать время (Поработать)\n");
+    printf("[3] Посмотреть инвентарь\n");
+    printf("[4] Положить предмет в слот\n");
+    printf("[5] Выбросить предмет\n");
+    printf("[6] Ревизия ресурсов\n\n");
+}
+
 int get_safe_int_input(const char *input_prompt, int min, int max)
 {
     int input_val;
@@ -96,8 +108,8 @@ int main()
 	int counter;
 	while (1)
 	{
+        print_reference();
 		choice = get_safe_int_input("Для выбора действия введите число от 0 до 6", 0, 6);
-
 		switch (choice)
 		{
 			case 0:
@@ -114,7 +126,6 @@ int main()
 			case 2:
 				printf("Вы можете работать от 1 до 20 часов.\n");
 				work_hours = get_safe_int_input("Введите количество часов, которые хотите потратить на работу", 1, 20);
-
 				current_hour += work_hours;
 				if (current_hour >= DAY_HOURS)
 				{
@@ -122,7 +133,6 @@ int main()
 					current_day += full_days_count;
 					current_hour -= full_days_count * DAY_HOURS;
 				}
-
 				printf("Время успешно обновлено!\n");
 				break;
 			case 3:
@@ -134,20 +144,17 @@ int main()
 			case 4:
 		        index = get_safe_int_input("Введите индекс слота для обновления", 0, ARR_SIZE - 1);
 		        item_id = get_safe_int_input("Введите ID добавляемого предмета", 0, MAX_ITEMS - 1);
-
 				inventory[index] = item_id;
 				printf("Инвентарь успешно изменён!\n");
 				break;
 			case 5:
 		        index = get_safe_int_input("Введите индекс слота для удаления", 0, ARR_SIZE - 1);
-
 				inventory[index] = EMPTY;
 				printf("Предмет удалён из инвентаря. В слот %d записано значение '%s'\n", index, item_names[0]);
 				break;
 			case 6:
 		        item_id = get_safe_int_input("Введите ID предмета для поиска", 0, MAX_ITEMS - 1);
 				counter = 0;
-
 				printf("Предмет находится в следующих слотах: ");
 				for (int i = 0; i < ARR_SIZE; i++)
 				{
