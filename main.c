@@ -15,6 +15,19 @@
 #define MAX_ITEMS 10
 #define MAX_NAME_LEN 31
 
+
+int get_safe_int_input(const char *input_prompt, int min, int max)
+{
+    int input_val;
+    printf("%s >>", input_prompt);
+    while (scanf("%d", &input_val) != 1 || input_val > max || input_val < min)
+    {
+        printf("Ошибка! Допустимы целые числа от %d до %d\n%s >>", min, max, input_prompt);
+        while (getchar() != '\n');
+    }
+    return input_val;
+}
+
 int main()
 {
 	int current_day = 1;
