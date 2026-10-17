@@ -82,18 +82,13 @@ int main()
 	scanf("%31s", player_name);
 	printf("%s, добро пожаловать в меню игры \"Весёлый фермер\"!\n", player_name);
 
-	int choice;
-	int work_hours;
+    int choice;
+    int work_hours;
 	int index, item_id;
 	int counter;
 	while (1)
 	{
-		printf("Для выбора действия введите цифру от 0 до 6 >>");
-		while (scanf("%d", &choice) != 1 || choice < 0 || choice > 6)
-		{
-			printf("Ошибка! Введите цифру от 0 до 6 >>");
-			while (getchar() != '\n');
-		}
+		choice = get_safe_int_input("Для выбора действия введите число от 0 до 6", 0, 6);
 
 		switch (choice)
 		{
@@ -109,14 +104,8 @@ int main()
 					printf("Текущее время: День %d, %d:00\n", current_day, current_hour);
 				break;
 			case 2:
-				printf("Введите количество часов, которые хотите потратить на работу >>");
-
-				while (scanf("%d", &work_hours) != 1)
-				{
-					printf("Ошибка! Количество часов должно быть целым числом\n");
-					printf("Введите количество часов, которые хотите потратить на работу >>");
-					while (getchar() != '\n');
-				}
+				printf("Вы можете работать от 1 до 20 часов.\n");
+				work_hours = get_safe_int_input("Введите количество часов, которые хотите потратить на работу", 1, 20);
 
 				current_hour += work_hours;
 				if (current_hour >= DAY_HOURS)
@@ -129,89 +118,28 @@ int main()
 				printf("Время успешно обновлено!\n");
 				break;
 			case 3:
-				/*for (int i = 0; i < ARR_SIZE; i++)
+				for (int i = 0; i < ARR_SIZE; i++)
 				{
-					switch (inventory[i])
-					{
-						case WOOD:
-							printf("Слот %d: [1] (Дерево)\n", i);
-							break;
-						case STONE:
-							printf("Слот %d: [2] (Камень)\n", i);
-							break;
-						case SEEDS:
-							printf("Слот %d: [3] (Семена)\n", i);
-							break;
-						case GRASS:
-							printf("Слот %d: [4] (Трава)\n", i);
-							break;
-						case CLAY:
-							printf("Слот %d: [5] (Глина)\n", i);
-							break;
-						case LEAF:
-							printf("Слот %d: [6] (Листья)\n", i);
-							break;
-						case CARBON:
-							printf("Слот %d: [7] (Уголь)\n", i);
-							break;
-						case IRON:
-							printf("Слот %d: [1] (Железо)\n", i);
-							break;
-						case GOLD:
-							printf("Слот %d: [1] (Золото)\n", i);
-							break;
-						default:
-							printf("Слот %d: [0]\n", i);
-							break;
-					}
-				}*/
+					printf("Слот %d: [%d] - %s\n", i, inventory[i], item_names[inventory[i]]);
+				}
 				break;
 			case 4:
-				printf("Введите индекс слота от 0 до 9 >>");
-
-				while (scanf("%d", &index) < 0 || index > ARR_SIZE - 1)
-				{
-					printf("Ошибка! Индекс не может быть меньше 0 и больше %d\n", ARR_SIZE - 1);
-					printf("Введите индекс слота от 0 до 9 >>");
-					while (getchar() != '\n');
-				}
-
-				printf("Введите ID предмета от 0 до 9 >>");
-
-				while (scanf("%d", &item_id) < 0 || item_id > 9)
-				{
-					printf("Ошибка! ID предмета не может быть меньше 0 и больше %d\n", ARR_SIZE - 1);
-					printf("Введите ID предмета от 0 до 9 >>");
-					while (getchar() != '\n');
-				}
+		        index = get_safe_int_input("Введите индекс слота для обновления", 0, ARR_SIZE - 1);
+		        item_id = get_safe_int_input("Введите ID добавляемого предмета", 0, MAX_ITEMS - 1);
 
 				inventory[index] = item_id;
 				printf("Инвентарь успешно изменён!\n");
 				break;
 			case 5:
-				printf("Введите индекс слота от 0 до 9 >>");
-
-				while (scanf("%d", &index) < 0 || index > ARR_SIZE - 1)
-				{
-					printf("Ошибка! Индекс не может быть меньше 0 и больше %d\n", ARR_SIZE - 1);
-					printf("Введите индекс слота от 0 до 9 >>");
-					while (getchar() != '\n');
-				}
+		        index = get_safe_int_input("Введите индекс слота для удаления", 0, ARR_SIZE - 1);
 
 				inventory[index] = EMPTY;
-				printf("Предмет удалён из инвентаря.\n");
+				printf("Предмет удалён из инвентаря. В слот %d записано значение '%s'\n", index, item_names[0]);
 				break;
 			case 6:
-				printf("Введите ID предмета от 0 до 9 >>");
-
-				while (scanf("%d", &item_id) < 0 || item_id > 9)
-				{
-					printf("Ошибка! ID предмета не может быть меньше 0 и больше %d\n", ARR_SIZE - 1);
-					printf("Введите ID предмета от 0 до 9 >>");
-					while (getchar() != '\n');
-				}
-
+		        item_id = get_safe_int_input("Введите ID предмета для поиска", 0, MAX_ITEMS - 1);
 				counter = 0;
+
 				printf("Предмет находится в следующих слотах: ");
 				for (int i = 0; i < ARR_SIZE; i++)
 				{
