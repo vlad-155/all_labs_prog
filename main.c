@@ -16,6 +16,20 @@
 #define MAX_NAME_LEN 31
 
 
+void fill_inventory(int inventory[ARR_SIZE])
+{
+    inventory[0] = RAKE_LV_1;
+    inventory[1] = SHOVEL_LV_1;
+    inventory[2] = AXE_LV_1;
+    inventory[3] = WHEAT_SEEDS;
+    inventory[4] = CLAY;
+    inventory[5] = CARBON;
+    inventory[6] = EMPTY;
+    inventory[7] = CARBON;
+    inventory[8] = WOOD;
+    inventory[9] = CARBON;
+}
+
 int get_safe_int_input(const char *input_prompt, int min, int max)
 {
     int input_val;
@@ -65,16 +79,7 @@ int main()
 
 	int inventory[ARR_SIZE] = {0};
 
-	inventory[0] = RAKE_LV_1;
-	inventory[1] = SHOVEL_LV_1;
-	inventory[2] = AXE_LV_1;
-	inventory[3] = WHEAT_SEEDS;
-	inventory[4] = CLAY;
-	inventory[5] = CARBON;
-	inventory[6] = EMPTY;
-	inventory[7] = CARBON;
-	inventory[8] = WOOD;
-	inventory[9] = CARBON;
+	fill_inventory(inventory);
 
 	char player_name[32];
 	
