@@ -30,6 +30,37 @@ void fill_inventory(int inventory[ARR_SIZE])
     inventory[9] = CARBON;
 }
 
+void set_item_names(char item_names[ARR_SIZE][MAX_NAME_LEN], const char *file_name)
+{
+    FILE *file = fopen(file_name, "r");
+
+    if (file == NULL)
+    {
+        printf("ВНИМАНИЕ! Файл '%s' не найден в корневой директории. Используются значения по умолчанию.\n", file_name);
+        strcpy(item_names[0], "Пусто");
+        strcpy(item_names[1], "Дерево");
+        strcpy(item_names[2], "Камень");
+        strcpy(item_names[3], "Семена_пшеницы");
+        strcpy(item_names[4], "Семена_кукурузы");
+        strcpy(item_names[5], "Глина");
+        strcpy(item_names[6], "Уголь");
+        strcpy(item_names[7], "Лопата_уровень_1");
+        strcpy(item_names[8], "Грабли_уровень_1");
+        strcpy(item_names[9], "Топор_уровень_1");
+    }
+    else
+    {
+        int id;
+        char file_line[MAX_NAME_LEN + 1];
+        while (fscanf(file, "%d %31s", &id, file_line) != EOF)
+        {
+            strncpy(item_names[id], file_line, MAX_NAME_LEN - 1);
+            item_names[id][MAX_NAME_LEN - 1] = '\0';
+        }
+        fclose(file);
+    }
+}
+
 int get_safe_int_input(const char *input_prompt, int min, int max)
 {
     int input_val;
@@ -48,37 +79,9 @@ int main()
 	int current_hour = 8;
 
 	char item_names[MAX_ITEMS][MAX_NAME_LEN];
+    int inventory[ARR_SIZE] = {0};
 
-	FILE *file = fopen("items.txt", "r");
-
-	if (file == NULL)
-	{
-		printf("ВНИМАНИЕ! Файл 'items.txt' не найден в корневой директории. Используются значения по умолчанию");
-        strcpy(item_names[0], "Пусто");
-	    strcpy(item_names[1], "Дерево");
-	    strcpy(item_names[2], "Камень");
-	    strcpy(item_names[3], "Семена_пшеницы");
-	    strcpy(item_names[4], "Семена_кукурузы");
-	    strcpy(item_names[5], "Глина");
-	    strcpy(item_names[6], "Уголь");
-	    strcpy(item_names[7], "Лопата_уровень_1");
-	    strcpy(item_names[8], "Грабли_уровень_1");
-	    strcpy(item_names[9], "Топор_уровень_1");
-	}
-    else
-    {
-        int id;
-        char file_line[MAX_NAME_LEN + 1];
-        while (fscanf(file, "%d %31s", &id, file_line) != EOF)
-        {
-            strncpy(item_names[id], file_line, MAX_NAME_LEN - 1);
-            item_names[id][MAX_NAME_LEN - 1] = '\0';
-        }
-        fclose(file);
-    }
-
-	int inventory[ARR_SIZE] = {0};
-
+    set_item_names(item_names, "items.txt");
 	fill_inventory(inventory);
 
 	char player_name[32];
