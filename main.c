@@ -160,12 +160,7 @@ int main()
 				printf("Выход из игры...");
 				return 0;
 			case 1:
-				if (current_hour <= 9)
-				{
-					printf("Текущее время: День %d, 0%d:00\n", current_day, current_hour);
-				}
-				else
-					printf("Текущее время: День %d, %d:00\n", current_day, current_hour);
+				printf("Текущее время: День %d, %02d:00\n", current_day, current_hour);
 				break;
 			case 2:
 				printf("Вы можете работать от 1 до 20 часов.\n");
