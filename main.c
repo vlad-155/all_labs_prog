@@ -14,6 +14,7 @@
 #define DAY_HOURS 24
 #define MAX_ITEMS 10
 #define MAX_NAME_LEN 31
+#define MAX_PLAYER_NAME_LEN 32
 
 
 void fill_inventory(int inventory[ARR_SIZE])
@@ -72,6 +73,7 @@ void print_reference()
     printf("[5] Выбросить предмет\n");
     printf("[6] Ревизия ресурсов\n");
     printf("[7] Поиск предмета в рюкзаке по названию\n");
+    printf("[8] Записать состояние в дневник фермера\n");
     printf("\n");
 }
 
@@ -130,6 +132,28 @@ void search_by_item_name(const char *search_query, char item_names[ARR_SIZE][MAX
     }
 }
 
+
+void write_to_diary(const char *player_name, int current_day, int current_hour, char item_names[ARR_SIZE][MAX_NAME_LEN],
+    int inventory[ARR_SIZE], const char *file_name)
+{
+    printf("Запись дневника в файл %s...\n", file_name);
+    FILE *file = fopen(file_name, "a");
+
+    if (file == NULL)
+    {
+        printf("Ошибка при записи дневника в файл %s\n", file_name);
+    }
+    else
+    {
+        fprintf(file, "Имя фермера: %s\nТекущее время: День %d, %02d:00\nИнвентарь:\n", player_name, current_day, current_hour);
+        for (int i = 0; i < ARR_SIZE; i++)
+        {
+            fprintf(file, "Слот %d: [%d] - %s\n", i, inventory[i], item_names[inventory[i]]);
+        }
+        printf("Дневник успешно записан в файл %s\n", file_name);
+    }
+}
+
 int main()
 {
 	int current_day = 1;
@@ -141,7 +165,7 @@ int main()
     set_item_names(item_names, "items.txt");
 	fill_inventory(inventory);
 
-	char player_name[32];
+	char player_name[MAX_PLAYER_NAME_LEN];
 	
 	printf("Введите ваше имя >>");
 	scanf("%31s", player_name);
@@ -153,7 +177,7 @@ int main()
 	while (1)
 	{
         print_reference();
-		choice = get_safe_int_input("Для выбора действия введите число от 0 до 7", 0, 7);
+		choice = get_safe_int_input("Для выбора действия введите число от 0 до 8", 0, 8);
 		switch (choice)
 		{
 			case 0:
@@ -201,6 +225,9 @@ int main()
 		        printf("Введите поисковый запрос >>");
 		        scanf("%31s", search_query);
 		        search_by_item_name(search_query, item_names, inventory);
+		        break;
+		    case 8:
+		        write_to_diary(player_name, current_day, current_hour, item_names, inventory, "diary.txt");
 		        break;
 		}
 	}
