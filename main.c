@@ -31,35 +31,58 @@ void fill_inventory(int inventory[ARR_SIZE])
     inventory[9] = CARBON;
 }
 
+void set_default_item_names(char item_names[ARR_SIZE][MAX_NAME_LEN])
+{
+    const char *default_names[ARR_SIZE] = {
+        "Пусто",
+        "Дерево",
+        "Камень",
+        "Семена_пшеницы",
+        "Семена_кукурузы",
+        "Глина",
+        "Уголь",
+        "Лопата_уровень_1",
+        "Грабли_уровень_1",
+        "Топор_уровень_1"
+    };
+
+    for (int i = 0; i < ARR_SIZE; i++)
+    {
+        strncpy(item_names[i], default_names[i], MAX_NAME_LEN - 1);
+        item_names[i][MAX_NAME_LEN - 1] = '\0';
+    }
+}
+
 void set_item_names(char item_names[ARR_SIZE][MAX_NAME_LEN], const char *file_name)
 {
+    set_default_item_names(item_names);
+
     FILE *file = fopen(file_name, "r");
 
     if (file == NULL)
     {
         printf("ВНИМАНИЕ! Файл '%s' не найден в корневой директории. Используются значения по умолчанию.\n", file_name);
-        strcpy(item_names[0], "Пусто");
-        strcpy(item_names[1], "Дерево");
-        strcpy(item_names[2], "Камень");
-        strcpy(item_names[3], "Семена_пшеницы");
-        strcpy(item_names[4], "Семена_кукурузы");
-        strcpy(item_names[5], "Глина");
-        strcpy(item_names[6], "Уголь");
-        strcpy(item_names[7], "Лопата_уровень_1");
-        strcpy(item_names[8], "Грабли_уровень_1");
-        strcpy(item_names[9], "Топор_уровень_1");
+        return;
     }
-    else
+
+    int id;
+    char file_line[MAX_NAME_LEN + 1];
+    while (fgets(file_line, sizeof(file_line), file) != NULL)
     {
-        int id;
-        char file_line[MAX_NAME_LEN + 1];
-        while (fscanf(file, "%d %31s", &id, file_line) != EOF)
+        char name[MAX_NAME_LEN + 1];
+        if (sscanf(file_line, "%d %31s", &id, name) != 2)
         {
-            strncpy(item_names[id], file_line, MAX_NAME_LEN - 1);
-            item_names[id][MAX_NAME_LEN - 1] = '\0';
+            continue;
         }
-        fclose(file);
+        if (id < 0 || id >= ARR_SIZE)
+        {
+            printf("ВНИМАНИЕ! В файле '%s' указан недопустимый ID %d. Строка пропущена.\n", file_name, id);
+            continue;
+        }
+        strncpy(item_names[id], name, MAX_NAME_LEN - 1);
+        item_names[id][MAX_NAME_LEN - 1] = '\0';
     }
+    fclose(file);
 }
 
 void print_reference()
