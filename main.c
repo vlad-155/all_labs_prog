@@ -99,6 +99,7 @@ void print_reference(const char *player_name)
     printf("[6] Ревизия ресурсов\n");
     printf("[7] Поиск предмета в рюкзаке по названию\n");
     printf("[8] Записать состояние в дневник фермера\n");
+    printf("[9] Поисковик по «Энциклопедии фермера» \n");
     printf("\n");
 }
 
@@ -194,6 +195,144 @@ void write_to_diary(const char *player_name, int current_day, int current_hour, 
     printf("Дневник успешно записан в файл %s\n", file_name);
 }
 
+/* Приводит к нижнему регистру ASCII и русские буквы в UTF-8.
+ * Длина строки в байтах при этом не меняется. */
+void utf8_to_lower(char *text)
+{
+    unsigned char *p = (unsigned char *)text;
+
+    while (*p != '\0')
+    {
+        if (*p >= 'A' && *p <= 'Z')
+        {
+            *p = (unsigned char)(*p - 'A' + 'a');
+            p++;
+        }
+        else if (p[0] == 0xD0 && p[1] == 0x81) /* Ё -> ё */
+        {
+            p[0] = 0xD1;
+            p[1] = 0x91;
+            p += 2;
+        }
+        else if (p[0] == 0xD0 && p[1] >= 0x90 && p[1] <= 0x9F) /* А-П -> а-п */
+        {
+            p[1] = (unsigned char)(p[1] + 0x20);
+            p += 2;
+        }
+        else if (p[0] == 0xD0 && p[1] >= 0xA0 && p[1] <= 0xAF) /* Р-Я -> р-я */
+        {
+            p[0] = 0xD1;
+            p[1] = (unsigned char)(p[1] - 0x20);
+            p += 2;
+        }
+        else if ((p[0] & 0xE0) == 0xC0 && p[1] != '\0')
+        {
+            p += 2;
+        }
+        else if ((p[0] & 0xF0) == 0xE0 && p[1] != '\0' && p[2] != '\0')
+        {
+            p += 3;
+        }
+        else if ((p[0] & 0xF8) == 0xF0 && p[1] != '\0' && p[2] != '\0' && p[3] != '\0')
+        {
+            p += 4;
+        }
+        else
+        {
+            p++;
+        }
+    }
+}
+
+void search_in_wiki(const char *search_query, const char *input_file_name, const char *output_file_name)
+{
+    if (search_query[0] == '\0')
+    {
+        printf("Поисковый запрос пуст.\n");
+        return;
+    }
+
+    FILE *input_file = fopen(input_file_name, "r");
+
+    if (input_file == NULL)
+    {
+        printf("Файл %s не найден в корневом каталоге.\n", input_file_name);
+        return;
+    }
+
+    FILE *output_file = fopen(output_file_name, "w");
+
+    if (output_file == NULL)
+    {
+        printf("Возникла ошибка при записи в файл %s\n", output_file_name);
+        fclose(input_file);
+        return;
+    }
+
+    char file_line[256];
+    char lower_query[256];
+    strncpy(lower_query, search_query, sizeof(lower_query) - 1);
+    lower_query[sizeof(lower_query) - 1] = '\0';
+    utf8_to_lower(lower_query);
+    size_t query_len = strlen(lower_query);
+
+    int found_count = 0;
+
+    while (fgets(file_line, sizeof(file_line), input_file) != NULL)
+    {
+        file_line[strcspn(file_line, "\r\n")] = '\0';
+
+        char lower_line[256];
+        strncpy(lower_line, file_line, sizeof(lower_line) - 1);
+        lower_line[sizeof(lower_line) - 1] = '\0';
+        utf8_to_lower(lower_line);
+
+        char result[1024];
+        size_t result_len = 0;
+        size_t line_len = strlen(file_line);
+        size_t pos = 0;
+        int matches_in_line = 0;
+
+        while (pos < line_len && result_len + 3 < sizeof(result))
+        {
+            if (pos + query_len <= line_len &&
+                strncmp(lower_line + pos, lower_query, query_len) == 0)
+            {
+                result[result_len++] = '[';
+                memcpy(result + result_len, file_line + pos, query_len);
+                result_len += query_len;
+                result[result_len++] = ']';
+                pos += query_len;
+                matches_in_line++;
+            }
+            else
+            {
+                result[result_len++] = file_line[pos++];
+            }
+        }
+        result[result_len] = '\0';
+
+        if (matches_in_line > 0)
+        {
+            found_count++;
+            printf("%d. %s\n", found_count, result);
+            fprintf(output_file, "%d. %s\n", found_count, result);
+        }
+    }
+
+    if (found_count == 0)
+    {
+        printf("Совпадений по запросу '%s' не найдено.\n", search_query);
+    }
+    else
+    {
+        printf("Найдено статей: %d. Результат сохранён в файл %s\n", found_count, output_file_name);
+    }
+
+    fclose(output_file);
+    fclose(input_file);
+}
+
 int main(void)
 {
     int current_day = 1;
@@ -221,7 +360,7 @@ int main(void)
     while (1)
     {
         print_reference(player_name);
-        choice = get_safe_int_input("Для выбора действия введите число от 0 до 8", 0, 8);
+        choice = get_safe_int_input("Для выбора действия введите число от 0 до 9", 0, 9);
         switch (choice)
         {
             case 0:
@@ -279,6 +418,18 @@ int main(void)
             case 8:
                 write_to_diary(player_name, current_day, current_hour, item_names, inventory, "diary.txt");
                 break;
+            case 9:
+            {
+                char wiki_search_query[256];
+                printf("Введите поисковый запрос >>");
+                if (scanf("%255s", wiki_search_query) != 1)
+                {
+                    printf("Некорректный ввод.\n");
+                    break;
+                }
+                search_in_wiki(wiki_search_query, "input.txt", "output.txt");
+                break;
+            }
         }
     }
 
