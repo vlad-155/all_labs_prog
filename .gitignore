@@ -2,3 +2,7 @@
 .o
 .out
 .vs
+main
+
+input.txt
+diary.txt
